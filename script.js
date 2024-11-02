@@ -10,6 +10,9 @@ let currentQuestion = 0;
 let answerSubmitted = false;
 const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 const majorScale = ["C", "D", "E", "F", "G", "A", "B"];
+const ANSWER_DELAY = 1000; // Time before next question
+const CORRECT_AUDIO_FEEDBACK = new Audio("path/to/correct-sound.mp3"); // Optional
+const INCORRECT_AUDIO_FEEDBACK = new Audio("path/to/incorrect-sound.mp3"); // Optional
 
 // Menu navigation functions
 function showMenu() {
@@ -114,10 +117,11 @@ function generateOptions() {
   const mode = document.getElementById("mode").value;
   const availableNotes = mode === "major" ? majorScale : notes;
 
-  availableNotes.forEach((note) => {
+  availableNotes.forEach((note, index) => {
     const button = document.createElement("button");
     button.className = "option-button";
     button.textContent = note;
+    button.dataset.keyboardShortcut = index + 1;
     button.onclick = () => checkAnswer(note);
     optionsContainer.appendChild(button);
   });
@@ -168,7 +172,22 @@ function checkAnswer(selectedNote) {
 
   answerSubmitted = true;
   const correctNote = currentNote.slice(0, -1);
+  const isCorrect = selectedNote === correctNote;
+
+  // Play feedback sound
+  if (isCorrect) {
+    CORRECT_AUDIO_FEEDBACK?.play().catch(() => {}); // Optional
+  } else {
+    INCORRECT_AUDIO_FEEDBACK?.play().catch(() => {}); // Optional
+  }
+
   const buttons = document.querySelectorAll(".option-button");
+
+  console.log({
+    played: currentNote,
+    correctNote: correctNote,
+    selected: selectedNote,
+  });
 
   buttons.forEach((button) => {
     button.disabled = true;
@@ -183,6 +202,7 @@ function checkAnswer(selectedNote) {
   if (selectedNote === correctNote) {
     currentScore++;
     currentStreak++;
+    updateScore();
   } else {
     currentStreak = 0;
   }
@@ -191,9 +211,7 @@ function checkAnswer(selectedNote) {
   document.getElementById("streak").textContent = currentStreak;
 
   if (currentQuestion === 10) {
-    setTimeout(() => {
-      endGame();
-    }, 1000);
+    setTimeout(endGame, 1000);
   } else {
     setTimeout(() => {
       currentQuestion++;
@@ -343,11 +361,12 @@ document.addEventListener("DOMContentLoaded", function () {
 // Keyboard control
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
+    e.preventDefault();
     playCurrentNote();
   } else if (e.key >= "1" && e.key <= "7") {
     const buttons = document.querySelectorAll(".option-button");
     const index = parseInt(e.key) - 1;
-    if (buttons[index]) {
+    if (buttons[index] && !buttons[index].disabled) {
       buttons[index].click();
     }
   }
@@ -359,4 +378,15 @@ function updateScore() {
   scoreElement.classList.add("score-change");
   scoreElement.textContent = currentScore;
   setTimeout(() => scoreElement.classList.remove("score-change"), 300);
+}
+
+// Add this helper function
+function isValidNote(note) {
+  const [noteName, octave] = [note.slice(0, -1), parseInt(note.slice(-1))];
+  return (
+    notes.includes(noteName) &&
+    !isNaN(octave) &&
+    octave >= MIN_SUPPORTED_OCTAVE &&
+    octave <= MAX_SUPPORTED_OCTAVE
+  );
 }

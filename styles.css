@@ -544,10 +544,6 @@ input[type="range"] {
   cursor: wait;
 }
 
-.sound-button.loading .fa-bullhorn {
-  animation: rotate 1s linear infinite;
-}
-
 @keyframes rotate {
   from {
     transform: rotate(0deg);
