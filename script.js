@@ -99,11 +99,11 @@ function getRandomNote() {
     parseInt(document.getElementById("maxOctave").value)
   );
 
-  // Clamp octaves to supported range (assuming Tone.js typical range of 0-8)
+  // Clamp octaves to supported range
   minOctave = Math.max(0, Math.min(8, minOctave));
   maxOctave = Math.max(0, Math.min(8, maxOctave));
 
-  // Select a single octave from the range
+  // Select a single octave from the range and stick to it
   const selectedOctave =
     Math.floor(Math.random() * (maxOctave - minOctave + 1)) + minOctave;
 
@@ -111,12 +111,8 @@ function getRandomNote() {
   const noteIndex = Math.floor(Math.random() * availableNotes.length);
   const note = availableNotes[noteIndex];
 
-  // If the note is higher than B in the musical alphabet and we're using chromatic scale,
-  // we need to keep it in the same octave range
-  const notePosition = notes.indexOf(note);
-  const finalOctave = selectedOctave;
-
-  return note + finalOctave;
+  // Always use the selected octave, regardless of the note
+  return note + selectedOctave;
 }
 
 // Generate note buttons based on game mode
