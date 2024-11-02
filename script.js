@@ -89,7 +89,7 @@ function getRandomNote() {
   const mode = document.getElementById("mode").value;
   const availableNotes = mode === "major" ? majorScale : notes;
 
-  // Ensure octave values are valid numbers and within supported range
+  // Get octave range from inputs
   let minOctave = Math.min(
     parseInt(document.getElementById("minOctave").value),
     parseInt(document.getElementById("maxOctave").value)
@@ -103,11 +103,20 @@ function getRandomNote() {
   minOctave = Math.max(0, Math.min(8, minOctave));
   maxOctave = Math.max(0, Math.min(8, maxOctave));
 
-  const noteIndex = Math.floor(Math.random() * availableNotes.length);
-  const octave =
+  // Select a single octave from the range
+  const selectedOctave =
     Math.floor(Math.random() * (maxOctave - minOctave + 1)) + minOctave;
 
-  return availableNotes[noteIndex] + octave;
+  // Get a random note from available notes
+  const noteIndex = Math.floor(Math.random() * availableNotes.length);
+  const note = availableNotes[noteIndex];
+
+  // If the note is higher than B in the musical alphabet and we're using chromatic scale,
+  // we need to keep it in the same octave range
+  const notePosition = notes.indexOf(note);
+  const finalOctave = selectedOctave;
+
+  return note + finalOctave;
 }
 
 // Generate note buttons based on game mode
