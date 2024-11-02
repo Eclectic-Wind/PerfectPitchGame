@@ -103,16 +103,24 @@ function getRandomNote() {
   minOctave = Math.max(0, Math.min(8, minOctave));
   maxOctave = Math.max(0, Math.min(8, maxOctave));
 
-  // Select a single octave from the range and stick to it
-  const selectedOctave =
-    Math.floor(Math.random() * (maxOctave - minOctave + 1)) + minOctave;
-
   // Get a random note from available notes
   const noteIndex = Math.floor(Math.random() * availableNotes.length);
   const note = availableNotes[noteIndex];
 
-  // Always use the selected octave, regardless of the note
-  return note + selectedOctave;
+  // Determine the correct octave based on the note's position
+  let octave = minOctave;
+  if (maxOctave > minOctave) {
+    // For notes before C in the scale (A and B), use the lower octave
+    if (note === "A" || note === "B") {
+      octave = Math.floor(Math.random() * (maxOctave - minOctave)) + minOctave;
+    } else {
+      // For notes from C onwards, we can use the full octave range
+      octave =
+        Math.floor(Math.random() * (maxOctave - minOctave + 1)) + minOctave;
+    }
+  }
+
+  return note + octave;
 }
 
 // Generate note buttons based on game mode
