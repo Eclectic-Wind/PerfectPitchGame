@@ -554,3 +554,79 @@ input[type="range"] {
 }
 
 /* happy halloween */
+
+#minOctave::-webkit-slider-thumb {
+  margin-left: -12px;
+  height: 24px;
+  width: 16px;
+  background-color: lightgray;
+  border: none;
+  border-radius: 2px;
+  margin-bottom: 16px;
+}
+
+#minOctave::-moz-range-thumb {
+  margin-left: -12px;
+  height: 24px;
+  width: 16px;
+  background-color: lightgray;
+  border: none;
+  margin-bottom: 16px;
+  border-radius: 2px;
+}
+
+#maxOctave::-webkit-slider-thumb {
+  margin-left: 12px;
+  height: 24px;
+  width: 16px;
+  background-color: lightgray;
+  border: none;
+  margin-bottom: 16.5px;
+  border-radius: 2px;
+}
+
+#maxOctave::-moz-range-thumb {
+  margin-left: 12px;
+  height: 24px;
+  width: 16px;
+  background-color: lightgray;
+  border: none;
+  margin-bottom: 16.5px;
+  border-radius: 2px;
+}
+
+/* Hover states */
+#minOctave::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+#minOctave::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+#maxOctave::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+#maxOctave::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+/* Update the base thumb styles to remove previous white color */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  pointer-events: all;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}

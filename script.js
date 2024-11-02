@@ -307,9 +307,7 @@ function setupOctaveSliders() {
     if (newMinVal < 1 || newMaxVal > 7) {
       return false;
     }
-    if (newMaxVal - newMinVal < 1) {
-      return false;
-    }
+    // Remove the minimum range requirement
     return true;
   }
 
@@ -318,11 +316,16 @@ function setupOctaveSliders() {
     const currentMax = parseInt(maxSlider.value);
 
     if (!validateRange(newMinVal, currentMax)) {
-      const correctedValue = Math.min(currentMax - 1, 6);
+      const correctedValue = Math.min(currentMax, 6);
       minSlider.value = correctedValue;
       minInput.value = correctedValue;
     } else {
       minInput.value = newMinVal;
+      // Update max value if it's less than min
+      if (currentMax < newMinVal) {
+        maxSlider.value = newMinVal;
+        maxInput.value = newMinVal;
+      }
     }
     updateSliderTrack();
   });
@@ -332,11 +335,16 @@ function setupOctaveSliders() {
     const newMaxVal = parseInt(maxSlider.value);
 
     if (!validateRange(currentMin, newMaxVal)) {
-      const correctedValue = Math.max(currentMin + 1, 2);
+      const correctedValue = Math.max(currentMin, 2);
       maxSlider.value = correctedValue;
       maxInput.value = correctedValue;
     } else {
       maxInput.value = newMaxVal;
+      // Update min value if it's greater than max
+      if (currentMin > newMaxVal) {
+        minSlider.value = newMaxVal;
+        minInput.value = newMaxVal;
+      }
     }
     updateSliderTrack();
   });
@@ -345,9 +353,13 @@ function setupOctaveSliders() {
     let val = parseInt(minInput.value);
     const currentMax = parseInt(maxSlider.value);
 
-    val = Math.min(Math.max(val, 1), currentMax - 1);
+    val = Math.min(Math.max(val, 1), 7);
     minInput.value = val;
     minSlider.value = val;
+    if (currentMax < val) {
+      maxInput.value = val;
+      maxSlider.value = val;
+    }
     updateSliderTrack();
   });
 
@@ -355,15 +367,18 @@ function setupOctaveSliders() {
     let val = parseInt(maxInput.value);
     const currentMin = parseInt(minSlider.value);
 
-    val = Math.min(Math.max(val, currentMin + 1), 7);
+    val = Math.min(Math.max(val, 1), 7);
     maxInput.value = val;
     maxSlider.value = val;
+    if (currentMin > val) {
+      minInput.value = val;
+      minSlider.value = val;
+    }
     updateSliderTrack();
   });
 
   updateSliderTrack();
 }
-
 // Init
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("volume").addEventListener("input", updateVolume);
