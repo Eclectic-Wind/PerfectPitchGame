@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Test and improve your musical perfect pitch with this interactive game. Practice identifying notes in different octaves and modes."
+    />
+    <meta
+      name="keywords"
+      content="perfect pitch, ear training, music game, pitch recognition, musical education"
+    />
+    <meta name="author" content="kam" />
+    <title>Perfect Pitch Game</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="menu" id="menu">
+        <h2>Pitch Pitch Game</h2>
+        <div class="settings-group">
+          <label for="mode">Game Mode:</label>
+          <select id="mode">
+            <option value="major">C Major Scale</option>
+            <option value="chromatic">All 12 Notes</option>
+          </select>
+        </div>
+
+        <div class="settings-group">
+          <label for="octaveRange">Octave Range:</label>
+          <div class="range_container">
+            <div class="sliders_control">
+              <div class="slider_track">
+                <div class="slider_track_highlight"></div>
+              </div>
+              <div class="slider_ticks">
+                <div class="tick" data-value="1"></div>
+                <div class="tick" data-value="2"></div>
+                <div class="tick" data-value="3"></div>
+                <div class="tick" data-value="4"></div>
+                <div class="tick" data-value="5"></div>
+                <div class="tick" data-value="6"></div>
+                <div class="tick" data-value="7"></div>
+              </div>
+              <input
+                id="minOctave"
+                type="range"
+                value="3"
+                min="1"
+                max="7"
+                step="1"
+              />
+              <input
+                id="maxOctave"
+                type="range"
+                value="4"
+                min="1"
+                max="7"
+                step="1"
+              />
+            </div>
+            <div class="form_control">
+              <div class="form_control_container">
+                <div class="form_control_container__time">Min</div>
+                <input
+                  class="form_control_container__time__input"
+                  type="number"
+                  id="minOctaveInput"
+                  value="3"
+                  min="1"
+                  max="7"
+                />
+              </div>
+              <div class="form_control_container">
+                <div class="form_control_container__time">Max</div>
+                <input
+                  class="form_control_container__time__input"
+                  type="number"
+                  id="maxOctaveInput"
+                  value="4"
+                  min="1"
+                  max="7"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="menu-button" onclick="startGame()">Start Game</button>
+
+        <div class="high-scores">
+          <h3>High Scores</h3>
+          <div id="highScoresList"></div>
+        </div>
+      </div>
+
+      <div class="game-area" id="gameArea">
+        <div class="game-stats">
+          <div class="stat-item">
+            <span class="stat-label">Questions</span>
+            <span class="stat-value"
+              ><span id="currentQuestion">1</span>/10</span
+            >
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Score</span>
+            <span class="stat-value"><span id="currentScore">0</span>/10</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Time</span>
+            <span class="stat-value" id="timer">0:00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Streak</span>
+            <span class="stat-value" id="streak">0</span>
+          </div>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+
+        <div class="sound-container">
+          <button class="sound-button" onclick="playCurrentNote()">
+            <i class="fas fa-bullhorn fa-2x"></i>
+          </button>
+          <div class="sound-animation"></div>
+          <div class="keyboard-hint">Press Space to replay</div>
+        </div>
+
+        <div class="options" id="options">
+          <div class="keyboard-hint">Use number keys 1-7 to select notes</div>
+        </div>
+        <button
+          class="menu-button"
+          onclick="showMenu()"
+          style="margin-top: 2rem"
+        >
+          Back to Menu
+        </button>
+      </div>
+
+      <div class="game-over" id="gameOver">
+        <h2>Game Complete!</h2>
+        <div class="final-stats">
+          <div class="stat-item">
+            <span class="stat-label">Final Score</span>
+            <span class="stat-value" id="finalScore">0/10</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Time</span>
+            <span class="stat-value" id="finalTime">0:00</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Best Streak</span>
+            <span class="stat-value" id="finalStreak">0</span>
+          </div>
+        </div>
+        <div class="game-over-buttons">
+          <button class="menu-button" onclick="replay()">Play Again</button>
+          <button class="menu-button" onclick="showMenu()">Back to Menu</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="volume-control">
+      <svg class="volume-icon" viewBox="0 0 24 24" width="20" height="20">
+        <path
+          fill="currentColor"
+          d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z"
+        />
+      </svg>
+      <input type="range" id="volume" min="0" max="100" value="75" />
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
