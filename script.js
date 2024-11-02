@@ -86,8 +86,19 @@ function getRandomNote() {
   const mode = document.getElementById("mode").value;
   const availableNotes = mode === "major" ? majorScale : notes;
 
-  const minOctave = parseInt(document.getElementById("minOctave").value);
-  const maxOctave = parseInt(document.getElementById("maxOctave").value);
+  // Ensure octave values are valid numbers and within supported range
+  let minOctave = Math.min(
+    parseInt(document.getElementById("minOctave").value),
+    parseInt(document.getElementById("maxOctave").value)
+  );
+  let maxOctave = Math.max(
+    parseInt(document.getElementById("minOctave").value),
+    parseInt(document.getElementById("maxOctave").value)
+  );
+
+  // Clamp octaves to supported range (assuming Tone.js typical range of 0-8)
+  minOctave = Math.max(0, Math.min(8, minOctave));
+  maxOctave = Math.max(0, Math.min(8, maxOctave));
 
   const noteIndex = Math.floor(Math.random() * availableNotes.length);
   const octave =
@@ -120,13 +131,35 @@ function playCurrentNote() {
 
   const soundContainer = document.querySelector(".sound-container");
   soundContainer.classList.add("playing");
-  synth.triggerAttackRelease(currentNote, "0.5");
 
-  setTimeout(() => {
-    soundContainer.classList.remove("playing");
-    soundButton.disabled = false;
-    soundButton.classList.remove("loading");
-  }, 500);
+  try {
+    // Validate that currentNote is properly formatted
+    if (!currentNote || typeof currentNote !== "string") {
+      console.error("Invalid note format:", currentNote);
+      return;
+    }
+
+    // Extract note and octave
+    const note = currentNote.slice(0, -1);
+    const octave = parseInt(currentNote.slice(-1));
+
+    // Validate octave is within Tone.js supported range (usually 0-8)
+    if (isNaN(octave) || octave < 0 || octave > 8) {
+      console.error("Octave out of range:", octave);
+      return;
+    }
+
+    synth.triggerAttackRelease(currentNote, "0.5");
+  } catch (error) {
+    console.error("Error playing note:", error);
+  } finally {
+    // Ensure UI is always reset
+    setTimeout(() => {
+      soundContainer.classList.remove("playing");
+      soundButton.disabled = false;
+      soundButton.classList.remove("loading");
+    }, 500);
+  }
 }
 
 // Check answer and update game state
@@ -240,6 +273,9 @@ function setupOctaveSliders() {
   }
 
   function validateRange(newMinVal, newMaxVal) {
+    if (newMinVal < 1 || newMaxVal > 7) {
+      return false;
+    }
     if (newMaxVal - newMinVal < 1) {
       return false;
     }
@@ -251,8 +287,9 @@ function setupOctaveSliders() {
     const currentMax = parseInt(maxSlider.value);
 
     if (!validateRange(newMinVal, currentMax)) {
-      minSlider.value = currentMax - 1;
-      minInput.value = currentMax - 1;
+      const correctedValue = Math.min(currentMax - 1, 6);
+      minSlider.value = correctedValue;
+      minInput.value = correctedValue;
     } else {
       minInput.value = newMinVal;
     }
@@ -264,8 +301,9 @@ function setupOctaveSliders() {
     const newMaxVal = parseInt(maxSlider.value);
 
     if (!validateRange(currentMin, newMaxVal)) {
-      maxSlider.value = currentMin + 1;
-      maxInput.value = currentMin + 1;
+      const correctedValue = Math.max(currentMin + 1, 2);
+      maxSlider.value = correctedValue;
+      maxInput.value = correctedValue;
     } else {
       maxInput.value = newMaxVal;
     }
